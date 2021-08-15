@@ -1,4 +1,4 @@
-from mysqlconnection import connectToMySQL
+from flask_app.config.mysqlconnection import connectToMySQL
 
 class User:
     def __init__( self,data ):
@@ -19,6 +19,23 @@ class User:
         return users
     
     @classmethod
-    def save(cls,data):
+    def create_employee(cls,data):
         query = "INSERT INTO users (first_name,last_name,email,created_at,updated_at) VALUES ( %(fname)s , %(lname)s, %(email)s , NOW(), NOW() );"
         return connectToMySQL('users_schema').query_db(query,data)
+
+    @classmethod
+    def get_single_user(cls,data):
+        query = "SELECT * FROM users WHERE id = %(id)s;"
+        results = connectToMySQL('users_schema').query_db(query,data)
+        this_user = User(results[0])
+        return this_user
+
+    @classmethod
+    def update_user(cls,data):
+        query = "UPDATE users SET first_name=%(fname)s,last_name=%(lname)s,email=%(email)s WHERE id=%(id)s;"
+        connectToMySQL('users_schema').query_db(query,data)
+
+    @classmethod
+    def delete_user(cls,data):
+        query = "DELETE FROM users WHERE id = %(id)s;"
+        connectToMySQL('users_schema').query_db(query,data)
